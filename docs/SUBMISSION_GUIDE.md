@@ -1,27 +1,34 @@
 # Submission guide
 
-The course submission requires a GitHub repository and a short screen recording or live demo.
+The assignment asks for a GitHub repository and a short screen recording or live demo. Submit the repository URL and the demo through the course's required channel.
 
-## Before submission
+## Before uploading to GitHub
 
-1. Install dependencies and run the app locally using the steps in the repository README.
-2. Confirm that \`.env\` contains your local API key and is not committed.
-3. Use fictional patient details only. Do not enter real names, contact details, or medical information.
-4. Test the empty-symptom warning, a routine example, the emergency fallback, Urdu output, streaming, and repeated requests with caching enabled.
-5. Review the GitHub file list to confirm that source files, \`requirements.txt\`, \`.env.example\`, and documentation are present.
+1. Run the app locally with the steps in `README.md`.
+2. Keep your real API key only in `.env`. Do not add `.env` to GitHub.
+3. Use fictional patient details in the app and in the recording.
+4. Leave `data/langchain_cache.db` out of the repository. `.gitignore` already excludes it.
+5. Review the staged file list and ensure it contains `.env.example`, not `.env`.
 
-## Streamlit deployment
+For a hosted Streamlit demo, keep the key in the host's secret settings (`OPENAI_API_KEY`), not in the repository. The opening dialog then lets visitors use the app-configured key without seeing it. The alternative personal-key option sends that key through the app host and should only be used on a deployment the visitor trusts.
 
-For Streamlit Community Cloud, select this repository, branch \`main\`, and main file \`app.py\`. Add \`OPENAI_API_KEY\` (and optionally \`OPENAI_MODEL\`) in the app's Settings → Secrets. Never store credentials in the repository.
+## Create and push a repository
+
+Create a new repository in your GitHub account, then run these commands from the project folder. Replace the example URL with your own repository URL.
+
+```powershell
+git init
+git add .
+git status --short
+git commit -m "Build MediGuide AI assignment prototype"
+git branch -M main
+git remote add origin https://github.com/YOUR-USERNAME/Medical_AI_Assignment.git
+git push -u origin main
+```
+
+Choose a public repository only if your course allows it; otherwise use a private repository and share access with the instructor. Never paste your API key into a commit, issue, chat, or screen recording.
 
 ## Demo outline
 
-1. Show the app name and the medical safety notice.
-2. Enter a fictional example such as age 25, runny nose and sore throat, duration 1–3 days, severity 2/10.
-3. Submit and show the live narrative streaming into the app.
-4. Show the dashboard tabs: summary, possible conditions for education only, next steps, clinician questions, and warning signs.
-5. Switch to Urdu and demonstrate an Urdu response.
-6. Repeat an identical request with caching enabled and explain the in-memory/SQLite distinction.
-7. Show the emergency phrase fallback using the assignment's chest-pain and breathing-difficulty example.
+Show the safety notices, enter fictional symptoms, submit and show the live narrative stream and results dashboard. Demonstrate Urdu output, the empty-symptom warning, an emergency fallback phrase, and a repeated identical request with a cache enabled. Keep the recording short and avoid showing `.env`, API keys, account pages, or real patient information.
 
-Keep the recording focused. Do not reveal the API key, terminal environment variables, private account details, or real patient data.

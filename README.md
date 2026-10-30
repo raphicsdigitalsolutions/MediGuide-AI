@@ -1,120 +1,97 @@
 # MediGuide AI
 
-**AI-Powered Medical Symptom Assessment and Patient Guidance Assistant**
+An educational Streamlit prototype for the **AI-Powered Medical Symptom Assessment and Patient Guidance Assistant** assignment. It demonstrates LangChain prompts, `LLMChain`, ChatOpenAI, structured JSON parsing, streaming, switchable model caching, and a safety-focused dashboard. The interface offers day and night clinical palettes, layered glass-like panels, an animated 3D guidance orb, and a 3D API-connection dialog.
 
-MediGuide AI is an educational Streamlit prototype built for a LangChain programming assignment. It accepts basic, user-entered symptom information and uses an OpenAI chat model through LangChain to produce structured, cautious educational guidance.
+## Safety and privacy
 
-> **Medical safety notice:** This project is an educational prototype only. It is not a medical device, does not provide a diagnosis or treatment, and must not replace a licensed healthcare professional or emergency services. Use fictional information for demonstrations. Seek emergency help immediately for urgent symptoms.
+This is a course prototype, not a medical device. It does not provide diagnosis or treatment. It must not be used to make care decisions. Every screen displays the medical disclaimer. The app asks users to contact local emergency services for urgent symptoms and uses a small keyword check to bypass the model for a few emergency phrases. That check is not exhaustive and cannot rule out an emergency.
 
-## Features
+For non-emergency submissions, the app sends the entered form information to the configured OpenAI API. Use only fictional demonstration data. Do not enter names, contact details, or real patient information. The SQLite cache stores model prompts and replies in a local database without encryption; keep caching off for sensitive information. `.env*` files and the local database are excluded from Git by `.gitignore`.
 
-- Patient age, gender, multiple symptoms, duration, self-reported severity, conditions, medications, and notes.
-- English and Urdu response-language selection.
-- OpenAI \`ChatOpenAI\` integration through LangChain.
-- Reusable \`PromptTemplate\`, \`ChatPromptTemplate\`, and \`LLMChain\`.
-- Demonstration of \`SystemMessage\`, \`HumanMessage\`, and \`AIMessage\`.
-- Required structured JSON schema with safe parsing and validation.
-- Live narrative streaming through \`llm.stream()\` and \`st.write_stream()\`.
-- Off, in-memory, and SQLite model-cache options, plus current-session result replay.
-- Dashboard for summary, educational possibilities, urgency estimate, next steps, clinician questions, and warning signs.
-- Prominent medical safety notices and a best-effort emergency phrase fallback.
+On a new Streamlit session, a connection dialog appears. The app owner can configure `OPENAI_API_KEY` in Streamlit Community Cloud's Secrets settings (or another host's secret manager); then visitors can use that app connection. A visitor may instead enter a personal key, which is held in that active Streamlit session's memory and sent through the app host to OpenAI. Only enter a personal key on a deployment you trust. Personal-key requests run with caching off. The dialog can also be dismissed without a key; emergency keyword guidance remains available, while regular model requests require a connection. The app never writes a visitor key to `.env`, a database, or GitHub.
 
-## Project structure
+## Features mapped to the assignment
 
-\`\`\`text
-MediGuide-AI/
-├── app.py
-├── requirements.txt
-├── README.md
-├── .env.example
-├── .gitignore
-├── .python-version
-├── .streamlit/
-│   └── config.toml
-├── src/
-│   ├── __init__.py
-│   ├── config.py
-│   ├── prompts.py
-│   ├── chains.py
-│   ├── cache_manager.py
-│   ├── safety.py
-│   └── utils.py
-└── docs/
-    ├── DEMO_SCRIPT.md
-    └── SUBMISSION_GUIDE.md
-\`\`\`
+- Patient age, gender, symptoms, duration, severity, conditions, medications, notes, and answer language.
+- `ChatOpenAI`, `PromptTemplate`, `ChatPromptTemplate`, `SystemMessage`, `HumanMessage`, `AIMessage`, and a reusable `LLMChain`.
+- Exact JSON fields with safe parsing and friendly handling of invalid output.
+- A plain-language narrative streamed through `llm.stream()` and `st.write_stream()`, with a safety filter that withholds medication/product suggestions and specific temperature or dose values.
+- Off, `InMemoryCache`, and `SQLiteCache` modes. Identical completed requests can also be replayed from the current Streamlit session for a visibly quicker second display.
+- Results dashboard with urgency, possible conditions for education only, next steps, questions for a professional, and warning signs.
+- English and Urdu answer language selection.
+- A Day theme switch in the sidebar; Night mode uses the default dark clinical palette.
 
-## Local setup (Windows PowerShell)
+LangChain v1 moved legacy chains such as `LLMChain` to the `langchain-classic` package. This project uses that package because the assignment explicitly requires `LLMChain`.
 
-Python 3.10+ is required. Python 3.12 is selected by \`.python-version\`.
+## Requirements
 
-\`\`\`powershell
+- Python 3.10 or later. Python 3.11 or 3.12 is a practical choice for a course environment.
+- An OpenAI API key for non-emergency requests.
+- Internet access while installing packages and calling the configured model.
+
+## Setup on Windows PowerShell
+
+From this project directory:
+
+```powershell
 python -m venv .venv
-.\\.venv\\Scripts\\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 Copy-Item .env.example .env
 notepad .env
-\`\`\`
+```
 
-Add your own OpenAI API key to the local \`.env\` file:
+In `.env`, replace the placeholder with your own key:
 
-\`\`\`dotenv
-OPENAI_API_KEY=your-openai-api-key-here
+```dotenv
+OPENAI_API_KEY=your-key-here
 OPENAI_MODEL=gpt-4o-mini
-\`\`\`
+```
 
-Run the application:
+Save `.env` locally, then run:
 
-\`\`\`powershell
+```powershell
 streamlit run app.py
-\`\`\`
+```
 
-Do not commit \`.env\`, \`.venv/\`, Streamlit secrets, or local cache files. The \`.env.example\` file contains placeholder text only.
+The browser opens the Streamlit app and shows the API connection dialog. For local `.env` configuration, choose **Continue with the app connection**. Or enter a personal key for the active session only. Use fictional details for a classroom demonstration. An empty symptom submission is stopped before an API call. A few recognized emergency phrases trigger a static emergency warning without waiting for the model.
 
-## Streamlit Community Cloud deployment
+## Deployment secrets
 
-1. Push this repository to GitHub.
-2. In Streamlit Community Cloud, create an app from this repository.
-3. Set the branch to \`main\` and the main file to \`app.py\`.
-4. In the app's **Settings → Secrets**, add:
-
-\`\`\`toml
-OPENAI_API_KEY = "your-openai-api-key"
-OPENAI_MODEL = "gpt-4o-mini"
-\`\`\`
-
-5. Deploy and test with fictional data.
-
-The application reads \`OPENAI_API_KEY\` from Streamlit secrets first, then from a local \`.env\` file. Never place an API key in source code or GitHub.
+Do not upload `.env` to GitHub. In Streamlit Community Cloud, add `OPENAI_API_KEY` in the app's **Settings → Secrets** field; visitors can then use the app-configured connection from the opening dialog. Keep `.streamlit/secrets.toml` out of Git as well. See Streamlit's [Secrets management guide](https://docs.streamlit.io/develop/concepts/connections/secrets-management) and [Community Cloud secrets guide](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/secrets-management).
 
 ## Caching explanation
 
-| Mode | Storage | Survives process restart? | Notes |
+| Cache | Stored in | Survives app restart? | Notes |
 |---|---|---:|---|
-| Off | No LangChain model cache | No | Avoids storing model prompts/replies in a cache. |
-| In-memory | RAM | No | Fast; cleared when the app process stops. |
-| SQLite | Local \`data/langchain_cache.db\` file | Yes, while that file persists | Persists across restarts but stores prompts/replies without encryption. |
+| Off | Nowhere in LangChain cache | No | Recommended when you do not need a cache. |
+| In-memory | Running Python process | No | Fast, but model prompts and replies remain in process memory until it stops. |
+| SQLite | `data/langchain_cache.db` | Yes | Model prompts and replies are stored locally in plaintext. Do not use with real patient information. |
 
-The application also replays an identical completed request from the active Streamlit session when caching is enabled. This avoids repeating the visible result-generation process in the same session.
+LangChain's cache is registered with `set_llm_cache(...)`. The app also keeps completed results in the current Streamlit session when caching is enabled, so repeating the same form can reuse the already generated narrative without another API request. Use the sidebar button to clear the selected LangChain cache.
 
-**Privacy warning:** Do not use real patient data. SQLite caching stores prompts and model responses locally in plaintext. Hosted app filesystems may be temporary, so SQLite persistence should not be assumed on Streamlit Community Cloud.
+## Classroom demonstration
 
-## Testing checklist
+Use synthetic examples from the assignment: mild runny nose and sore throat; fever and cough; chest pain with shortness of breath; a repeated request with caching enabled; and an Urdu response. Show the empty-symptom warning without submitting patient information. The emergency phrase path is a demonstration safety fallback, not a clinical triage service.
 
-- Mild example: runny nose and sore throat, short duration, low reported severity.
-- Fever and cough with moderate reported severity.
-- Chest pain with shortness of breath: verify the emergency fallback.
-- Submit the same fictional request twice with caching enabled.
-- Submit without selecting a symptom: the app should warn without calling the API.
-- Change the answer language to Urdu.
+## Submission files
 
-The emergency phrase check is intentionally narrow and is **not** a validated triage system. It cannot detect every emergency or rule one out.
+- `app.py` — Streamlit UI and run entry point.
+- `src/` — prompts, chain, cache, safety, configuration, and parsing logic.
+- `requirements.txt` — dependencies.
+- `.env.example` — placeholder configuration only.
+- `docs/Medical_AI_Assignment.pdf` — original assignment brief.
+- `docs/SUBMISSION_GUIDE.md` — repository and demo handoff steps.
+- `docs/DEMO_SCRIPT.md` — a short walkthrough for the screen recording.
 
-## LangChain compatibility note
+## References
 
-The project uses \`langchain-classic\` for the assignment's required \`LLMChain\` API because legacy chains were moved out of the main LangChain package in the LangChain 1.x line.
+- [LangChain v1 migration guide](https://docs.langchain.com/oss/python/migrate/langchain-v1/) — legacy chains moved to `langchain-classic`.
+- [LangChain `SQLiteCache` reference](https://reference.langchain.com/python/langchain-community/cache/SQLiteCache).
+- [LangChain `set_llm_cache` reference](https://reference.langchain.com/python/langchain-core/globals/set_llm_cache).
+- [Streamlit `st.write_stream` reference](https://docs.streamlit.io/develop/api-reference/write-magic/st.write_stream).
+- [Streamlit `st.dialog` reference](https://docs.streamlit.io/develop/api-reference/execution-flow/st.dialog).
+- [NHS chest pain guidance](https://www.nhs.uk/symptoms/chest-pain/) — includes immediate help guidance for chest pain with shortness of breath.
+- [London Ambulance Service emergency guidance](https://www.londonambulance.nhs.uk/our-services/emergency-care/calling-999/) — examples of life-threatening emergencies. The app avoids hard-coding a country-specific emergency number.
 
-## Demo recording
-
-See [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) for a short walkthrough. Never record an API key or real personal/medical information.
